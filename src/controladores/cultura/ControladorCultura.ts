@@ -1,26 +1,24 @@
-import type { Estudiante } from "../../modelos/estudiantes";
+import type { ParticipacionCultura } from "../../modelos/estudiantes";
 
 /**
  * Controlador paa Gestionar datos de la entidad Estudiante
  */
-export class ControladorEstudiante {
+export class ControladorCultura {
 
     /**
-     * 
+     * Obtener el listado de estudiantes desde la API
      * @returns 
      */
-    static async obtenerListadoEstudiantes(): Promise<Estudiante[]> {
-
+    static async obtenerListado(): Promise<ParticipacionCultura[]> {
         try {
-            const response = await fetch('http://localhost:3000/estudiante');
+            const response = await fetch('http://localhost:3000/participacion-cultura');
             if (!response.ok) {
                 throw new Error(`Error en la solicitud: ${response.status}`);
             }
-            const data: Estudiante[] = await response.json();
+            const data: ParticipacionCultura[] = await response.json();
             return data;
-
         } catch (error) {
-            console.error('Error al obtener los estudiantes:', error);             
+            console.error('Error al obtener la participación cultural:', error);
         }
         return [];
     }
@@ -28,10 +26,9 @@ export class ControladorEstudiante {
     /**
      * Enviar los datos del estudiante a crear a la API
      */
-    static async crearEstudiante(estudiante: Estudiante): Promise<boolean> {
-
+    static async crear(estudiante: ParticipacionCultura): Promise<boolean> {
         try {
-            const response = await fetch('http://localhost:3000/estudiante', {
+            const response = await fetch('http://localhost:3000/participacion-cultura', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,10 +37,9 @@ export class ControladorEstudiante {
             });
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al guardar el estudiante');
+                throw new Error(errorData.message || 'Error al guardar la participación cultural');
             }
             return true;
-
         } catch (error) {
             console.error('Error al enviar los datos:', error);
         }
@@ -53,25 +49,24 @@ export class ControladorEstudiante {
     /**
     * Enviar los datos del estudiante a modificar a la API
     */
-    static async modificarEstudiante(estudiante: Estudiante): Promise<boolean> {        
-
+    static async modificar(estudiante: ParticipacionCultura): Promise<boolean> {
         try {
-            if(estudiante.id){
-                const response = await fetch('http://localhost:3000/estudiante/' + estudiante.id?.toString(), {
+            if (estudiante.id) {
+                const response = await fetch('http://localhost:3000/participacion-cultura/' + estudiante.id?.toString(), {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(estudiante),
-                });    
+                });
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al modificar el estudiante');
-                }    
+                    throw new Error(errorData.message || 'Error al modificar la participación cultural');
+                }
                 return true;
-            } 
+            }
         } catch (error) {
-            console.error('Error al modificar el estudiante', error);
+            console.error('Error al modificar la participación cultural', error);
         }
         return false;
     };
@@ -79,28 +74,22 @@ export class ControladorEstudiante {
     /**
      * Eliminar
      */
-    static async eliminarEstudiante(id: string): Promise<boolean> {
-
+    static async eliminar(id: string): Promise<boolean> {
         try {
-            const response = await fetch('http://localhost:3000/estudiante/' + id, {
+            const response = await fetch('http://localhost:3000/participacion-cultura/' + id, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                //body: JSON.stringify(estudiante),
             });
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al eliminar el estudiante');
+                throw new Error(errorData.message || 'Error al eliminar la participación cultural');
             }
             return true;
-
         } catch (error) {
-            console.error('Error al eliminar el estudiante:', error);
+            console.error('Error al eliminar la participación cultural:', error);
         }
         return false;
     };
 }
-
-
-

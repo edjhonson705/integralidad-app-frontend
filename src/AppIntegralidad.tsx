@@ -17,11 +17,13 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
-import { ControladorEstudiante } from './controladores/estudiantes/ControladorEstudiante';
 import EstudiantesTabla from './componentes/estudiantes_tabla/estudiantes_tabla';
 import type { Estudiante } from './modelos/estudiantes';
 import ParrafosPaginaPrincipal from './componentes/parrafos_pagina_principal';
 import EstudianteCrearFormulario from './componentes/estudiantes_crear';
+import CulturaTabla from './componentes/cultura_tabla/cultura_tabla';
+import DeportesTabla from './componentes/deportes_tabla/deportes_tabla';
+import CulturaCrearFormulario from './componentes/cultura_crear';
 //import MailIcon from '@mui/icons-material/Mail';
 
 const drawerWidth = 240;
@@ -103,11 +105,20 @@ export default function AppIntegralidad() {
     const [open, setOpen] = React.useState(false);
     const [estudiantes, setEstudiantes] = React.useState<Estudiante[]>([]);
     const [gestionandoEstudiantes, setGestionandoEstudiantes] = React.useState(false);
+    //const [gestionandoCultura, setGestionandoCultura] = React.useState(false);
+    const [gestionandoDeportes, setGestionandoDeportes] = React.useState(false);
     const [creandoEstudiante, setCreandoEstudiante] = React.useState(false);
+    const [paginaPrincipal, setPaginaPrincipal] = React.useState(true);
+
+    const [queHacer, setQueHacer] = React.useState<{
+        gestionarCultura: boolean;
+        agregarCultura: boolean;
+    }>({
+        gestionarCultura: false,
+        agregarCultura: false,
+    });
 
     const [estudianteAModificar, setEstudianteAModificar] = React.useState<Estudiante | null>(null);
-
-
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -173,17 +184,8 @@ export default function AppIntegralidad() {
 
                     <ListItem key={'Estudiantes'} disablePadding>
                         <ListItemButton onClick={() => {
-
+                            setPaginaPrincipal(false);
                             setGestionandoEstudiantes(true);
-
-                            /* ControladorEstudiante.obtenerListadoEstudiantes().then((datos) => {
-                                 setGestionandoEstudiantes(true);
-                                 console.log('React:', datos);
-                                 setEstudiantes(datos)
-                             }).catch((error) => {
-                                 console.error('Error obteniendo estudiantes', error)
-                             });*/
-
                         }}>
                             <ListItemIcon>
                                 <InboxIcon />
@@ -193,7 +195,16 @@ export default function AppIntegralidad() {
                     </ListItem>
 
                     <ListItem key={'Cultura'} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => {
+                            setPaginaPrincipal(false);
+                            //setGestionandoCultura(true);
+                             setQueHacer(prevQueHacer => ({
+                                ...prevQueHacer,
+                                gestionarCultura: true,                                
+                            }));
+
+                            setGestionandoEstudiantes(false);
+                        }}>
                             <ListItemIcon>
                                 <InboxIcon />
                             </ListItemIcon>
@@ -202,7 +213,19 @@ export default function AppIntegralidad() {
                     </ListItem>
 
                     <ListItem key={'Deportes'} disablePadding>
-                        <ListItemButton>
+                         <ListItemButton onClick={() => {
+                            setPaginaPrincipal(false);
+
+                            //setQueHacer({ gestionarCultura: false });
+
+                            setQueHacer(prevQueHacer => ({
+                                ...prevQueHacer,
+                                gestionarCultura: false,                                
+                            }));
+
+                            setGestionandoDeportes(true);
+                            setGestionandoEstudiantes(false);
+                        }}>
                             <ListItemIcon>
                                 <InboxIcon />
                             </ListItemIcon>
@@ -213,7 +236,6 @@ export default function AppIntegralidad() {
                 </List>
                 <Divider />
                 <List>
-
                     <ListItem key={'Salir'} disablePadding>
                         <ListItemButton>
                             <ListItemIcon>
@@ -230,7 +252,35 @@ export default function AppIntegralidad() {
             <Main open={open}>
                 <DrawerHeader />
 
-                {/*<ParrafosPaginaPrincipal/>*/}
+                {/* Texto de inicio*/}
+                {paginaPrincipal ? <ParrafosPaginaPrincipal /> : null}
+
+                {/* Gestionando Cultura */}
+                {queHacer.gestionarCultura ? <CulturaTabla onCrear={ ()=> {
+
+                    setQueHacer(prevQueHacer => ({
+                        ...prevQueHacer,
+                        gestionarCultura: false,
+                        agregarCultura: true
+                    }));
+                    setGestionandoEstudiantes(false);
+
+                } } /> : null} 
+                
+                {/* Agregar Cultura */}
+                {queHacer.agregarCultura ? <CulturaCrearFormulario onCancelar={() => {
+                    setQueHacer(prevQueHacer => ({
+                        ...prevQueHacer,
+                        gestionarCultura: true,
+                        agregarCultura: false
+                    }));
+                 
+                }}  /> : null}
+
+                {/* Deportes */}
+                {gestionandoDeportes ? <DeportesTabla /> : null}
+
+                {/* Gestionando Estudiantes */}
 
                 {gestionandoEstudiantes ? <EstudiantesTabla onCrearEstudiante={() => {
                     setCreandoEstudiante(true);
