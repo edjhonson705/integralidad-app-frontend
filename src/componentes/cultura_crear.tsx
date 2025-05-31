@@ -27,11 +27,15 @@ export default function CulturaCrearFormulario(params: CulturaCrearFormularioPar
     nombre_numero_cultural: itemModificar.nombre_numero_cultural,
     categoria_cultural: itemModificar.categoria_cultural,
     resultado: itemModificar.resultado,
+    fecha: itemModificar.fecha,
+    curso: itemModificar.curso,
     id: itemModificar.id
   } : {
     nombre_numero_cultural: '',
     categoria_cultural: '',
     resultado: '',
+    fecha: new Date(),
+    curso: '',
   });
 
   const [mostrarAlerta, setMostrarAlerta] = React.useState<MostrarAlerta>({

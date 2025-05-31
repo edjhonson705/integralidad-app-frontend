@@ -25,7 +25,9 @@ export type ParticipacionCultura = {
     id?: number;
     nombre_numero_cultural: string;
     categoria_cultural: string;
-    resultado: string;   
+    resultado: string;
+    fecha: Date;  
+    curso: string; 
 };
 
 /**

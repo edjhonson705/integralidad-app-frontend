@@ -7,6 +7,7 @@ import { ControladorEstudiante } from '../../controladores/estudiantes/Controlad
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
+import EstudiantesCrearDialogo from '../estudiantes_crear_dialogo';
 
 const theme = createTheme(
   {
@@ -36,7 +37,7 @@ const paginationModel = { page: 0, pageSize: 10 };
 interface EstudiantesTablaParametros {
   listadoEstudiantes?: Estudiante[];
   onCrearEstudiante?: () => void;
-  onModificarEstudiante?: (estudiante:Estudiante) => void;
+  onModificarEstudiante?: (estudiante: Estudiante) => void;
   onEliminarEstudiante?: (resultado: boolean) => void;
 }
 
@@ -46,13 +47,17 @@ interface EstudiantesTablaParametros {
  */
 export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
 
-  const {
+  /*const {
     onCrearEstudiante,
     onModificarEstudiante,
-  } = params;
+  } = params;*/
+
+  const [estudianteAModificar, setEstudianteAModificar] = React.useState<Estudiante | null>(null);
 
   //useState
   const [seleccionado, setSeleccionado] = useState<string>('');
+
+  const [creandoEstudiante, setCreandoEstudiante] = useState<boolean>(false);
 
   const [mostrarAlerta, setMostrarAlerta] = useState<MostrarAlerta>({
     tipo: 'success',
@@ -126,6 +131,7 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
   return (
     <Paper sx={{ height: 500, width: '100%' }}>
       <ThemeProvider theme={theme}>
+
         <Snackbar
           open={mostrarAlerta.mostrar}
           autoHideDuration={10000}
@@ -141,19 +147,21 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
 
           {/*Agregar*/}
           <Button variant='contained' onClick={() => {
-
-            if (onCrearEstudiante) onCrearEstudiante();
-
+            setCreandoEstudiante(true);
+            // if (onCrearEstudiante) onCrearEstudiante();
           }}>Agregar estudiante</Button>
 
           {/*Modificar*/}
           <Button variant="outlined" onClick={() => {
-
             const estudiante = listadoEstudiantes.find(est => est.id === Number(seleccionado));
+            if (estudiante) {
 
-            if(estudiante){
-              if (onModificarEstudiante) onModificarEstudiante(estudiante);
-            }           
+              //setCreandoEstudiante(true);
+              setEstudianteAModificar(estudiante);
+
+              //if (onModificarEstudiante) onModificarEstudiante(estudiante);
+
+            }
 
           }}>Modificar</Button>
 
@@ -164,7 +172,6 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
 
         </Stack>
 
-
         <DataGrid
           rows={listadoEstudiantes}
           columns={columns}
@@ -173,15 +180,18 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
           checkboxSelection
           disableMultipleRowSelection
           onRowSelectionModelChange={(ids) => {
-
-            console.log(ids);
-
             const arrayId = Array.from(ids.ids);
-            // console.log(arrayId[0] as string);
             setSeleccionado(arrayId[0] as string);
           }}
           sx={{ border: 0 }}
         />
+
+        {/* Crear estudiante - Dialogo */}
+        {creandoEstudiante || estudianteAModificar ? <EstudiantesCrearDialogo estudianteModificar={estudianteAModificar || null} onCancelar={() => {
+          setCreandoEstudiante(false);
+          setEstudianteAModificar(null); 
+         }} /> : null}
+
       </ThemeProvider>
     </Paper>
   );

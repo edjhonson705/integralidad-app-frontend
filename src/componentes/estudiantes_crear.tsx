@@ -10,9 +10,8 @@ import type { Estudiante, MostrarAlerta } from '../modelos/estudiantes';
  */
 interface EstudianteCrearFormularioParametros {
   onCancelar?: () => void;
-  estudianteModificar?:Estudiante;
+  estudianteModificar?: Estudiante;
 }
-
 
 /**
  *
@@ -35,8 +34,8 @@ export default function EstudianteCrearFormulario(params: EstudianteCrearFormula
     situacion_escolar: estudianteModificar.situacion_escolar,
     observaciones: estudianteModificar.observaciones,
     sexo: estudianteModificar.sexo,
-    id:estudianteModificar.id
-  }: {
+    id: estudianteModificar.id
+  } : {
     anno_academico: '',
     grupo: '',
     primer_nombre: '',
@@ -47,14 +46,13 @@ export default function EstudianteCrearFormulario(params: EstudianteCrearFormula
     situacion_escolar: '',
     observaciones: '',
     sexo: '',
-  } );
+  });
 
   const [mostrarAlerta, setMostrarAlerta] = React.useState<MostrarAlerta>({
     tipo: 'success',
     mostrar: false,
-    mensaje:''
+    mensaje: ''
   });
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -62,72 +60,69 @@ export default function EstudianteCrearFormulario(params: EstudianteCrearFormula
   };
 
   /**
-   * 
+   *  Función para guardar los datos del estudiante.
    */
   const onGuardar = () => {
 
-
-    if(formData.id){ //Modificar estudiante
-
+    if (formData.id) { //Modificar estudiante
       ControladorEstudiante.modificarEstudiante(formData).then((resultado) => {
 
         if (resultado) {
           setMostrarAlerta({
             tipo: 'success',
             mostrar: true,
-            mensaje:'Los datos del estudiante han sido modificados satisfactoriamente'
+            mensaje: 'Los datos del estudiante han sido modificados satisfactoriamente'
           });
         }
         else {
           setMostrarAlerta({
             tipo: 'error',
             mostrar: true,
-            mensaje:'Ha ocurrido un error al modificar los datos del estudiante'
+            mensaje: 'Ha ocurrido un error al modificar los datos del estudiante'
           });
         }
-  
+
       }).catch((error) => {
-  
+
         console.log('Ha ocurrido un error al modificar los datos del estudiant', error);
-  
+
         setMostrarAlerta({
           tipo: 'error',
           mostrar: true,
-          mensaje:'Ha ocurrido un error al modificar los datos del estudiante'
+          mensaje: 'Ha ocurrido un error al modificar los datos del estudiante'
         });
       });
     }
-    else{ //Crear estudiante
+    else { //Crear estudiante
       ControladorEstudiante.crearEstudiante(formData).then((resultado) => {
 
         if (resultado) {
           setMostrarAlerta({
             tipo: 'success',
             mostrar: true,
-            mensaje:'Los datos del estudiante han sido guardados satisfactoriamente'
+            mensaje: 'Los datos del estudiante han sido guardados satisfactoriamente'
           });
         }
         else {
           setMostrarAlerta({
             tipo: 'error',
             mostrar: true,
-            mensaje:'Ha ocurrido un error al guardar los datos del estudiante'
+            mensaje: 'Ha ocurrido un error al guardar los datos del estudiante'
           });
         }
-  
+
       }).catch((error) => {
-  
-        console.log('Ha ocurrido un error al guardar los datos del estudiant', error);
-  
+
+        console.error('Ha ocurrido un error al guardar los datos del estudiant', error);
+
         setMostrarAlerta({
           tipo: 'error',
           mostrar: true,
-          mensaje:'Ha ocurrido un error al guardar los datos del estudiante'
+          mensaje: 'Ha ocurrido un error al guardar los datos del estudiante'
         });
       });
     }
-
-  } 
+  }
 
   /**
    * JSX
@@ -145,10 +140,10 @@ export default function EstudianteCrearFormulario(params: EstudianteCrearFormula
       <Snackbar
         open={mostrarAlerta.mostrar}
         autoHideDuration={10000}
-        onClose={() => setMostrarAlerta({tipo:'success', mostrar:false})}
+        onClose={() => setMostrarAlerta({ tipo: 'success', mostrar: false })}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Puedes cambiar la posición
       >
-        <Alert onClose={() => setMostrarAlerta({tipo:'success', mostrar:false})} severity={mostrarAlerta.tipo} variant="filled" sx={{ width: '100%' }}>
+        <Alert onClose={() => setMostrarAlerta({ tipo: 'success', mostrar: false })} severity={mostrarAlerta.tipo} variant="filled" sx={{ width: '100%' }}>
           {mostrarAlerta.mensaje}
         </Alert>
       </Snackbar>
@@ -181,7 +176,7 @@ export default function EstudianteCrearFormulario(params: EstudianteCrearFormula
           id="outlined-multiline-static"
           label="Observaciones"
           multiline
-          rows={4}         
+          rows={4}
         />
       </Box>
 

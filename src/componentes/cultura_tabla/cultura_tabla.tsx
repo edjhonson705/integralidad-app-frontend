@@ -7,6 +7,7 @@ import { ControladorCultura as Controlador } from '../../controladores/cultura/C
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
+import CulturaCrearDialogo from '../cultura_crear_dialogo';
 
 const theme = createTheme(
   {
@@ -22,13 +23,16 @@ const columns: GridColDef[] = [
   { field: 'nombre_numero_cultural', headerName: 'Número cultural', width: 300 },
   { field: 'categoria_cultural', headerName: 'Categoria cultural', width: 150 },
   { field: 'resultado', headerName: 'Resultado', width: 140 },
+  { field: 'fecha', type: 'date', headerName: 'Fecha', width: 140 },
+  { field: 'curso', headerName: 'Curso', width: 140 },
 ];
+
 const paginationModel = { page: 0, pageSize: 10 };
 
 interface CuturaTablaParametros {
   listado?: ParticipacionCultura[];
   onCrear?: () => void;
-  onModificar?: (participacion:ParticipacionCultura) => void;
+  onModificar?: (participacion: ParticipacionCultura) => void;
   onEliminar?: (resultado: boolean) => void;
 }
 
@@ -53,16 +57,20 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
     mensaje: ''
   });
 
-  const [listadoEstudiantes, setListadoEstudiantes] = useState<ParticipacionCultura[]>([]);
+  const [creandoParticipacionCultural, setCreandoParticipacionCultural] = useState<boolean>(false);
+
+  const [participacionCulturalAModificar, setParticipacionCulturalAModificar] = useState<ParticipacionCultura | null>(null);
+
+  const [listado, setListado] = useState<ParticipacionCultura[]>([]);
 
   /**
    * Solicitar estudiantes a la API
    */
-  const obtenerListadoEstudiantes = () => {
+  const obtenerListado = () => {
 
     Controlador.obtenerListado()
       .then((datos) => {
-        setListadoEstudiantes(datos);
+        setListado(datos);
       }).catch((error) => {
         console.error('Error obteniendo estudiantes', error);
       });
@@ -70,7 +78,7 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
 
   // obtener listado de estudiantes en la primera carga del componente
   useEffect(() => {
-    obtenerListadoEstudiantes();
+    obtenerListado();
   }, []);
 
   /**
@@ -90,7 +98,7 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
           });
 
           // Recargar la lista de estudiantes
-          obtenerListadoEstudiantes();
+          obtenerListado();
 
         }
         else {
@@ -102,7 +110,7 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
         }
 
       }).catch((error) => {
-        console.log('Error al eliminar la participación', error);
+        console.error('Error al eliminar la participación', error);
 
         setMostrarAlerta({
           tipo: 'error',
@@ -135,18 +143,21 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
           {/*Agregar*/}
           <Button variant='contained' onClick={() => {
 
+            setCreandoParticipacionCultural(true);
+
             if (onCrear) onCrear();
 
-          }}>Agregar</Button>
+          }}>Agregar participción cultural</Button>
 
           {/*Modificar*/}
           <Button variant="outlined" onClick={() => {
 
-            const elSeleccionado = listadoEstudiantes.find(est => est.id === Number(seleccionado));
+            const elSeleccionado = listado.find(est => est.id === Number(seleccionado));
 
-            if(elSeleccionado){
+            if (elSeleccionado) {
+              setParticipacionCulturalAModificar(elSeleccionado);
               if (onModificar) onModificar(elSeleccionado);
-            }      
+            }
 
           }}>Modificar</Button>
 
@@ -157,7 +168,7 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
         </Stack>
 
         <DataGrid
-          rows={listadoEstudiantes}
+          rows={listado}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[10, 20, 50]}
@@ -165,14 +176,18 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
           disableMultipleRowSelection
           onRowSelectionModelChange={(ids) => {
 
-            console.log(ids);
-
             const arrayId = Array.from(ids.ids);
-            // console.log(arrayId[0] as string);
             setSeleccionado(arrayId[0] as string);
           }}
           sx={{ border: 0 }}
         />
+
+        {/* Crear estudiante - Dialogo */}
+        {creandoParticipacionCultural || participacionCulturalAModificar ? <CulturaCrearDialogo itemModificar={participacionCulturalAModificar || null} onCancelar={() => {
+
+          setCreandoParticipacionCultural(false);
+          setParticipacionCulturalAModificar(null);
+        }} /> : null}
       </ThemeProvider>
     </Paper>
   );
