@@ -8,6 +8,7 @@ import { ControladorEstudiante } from '../../controladores/estudiantes/Controlad
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
 import EstudiantesCrearDialogo from '../estudiantes_crear_dialogo';
+import EstudianteParticipacionesCulturales from '../estudiantes_participaciones_culturales';
 
 const theme = createTheme(
   {
@@ -22,14 +23,14 @@ const columns: GridColDef[] = [
   { field: 'id', headerName: 'ID', width: 50 },
   { field: 'anno_academico', headerName: 'Año académico', width: 150 },
   { field: 'grupo', headerName: 'Grupo', width: 80 },
-  { field: 'primer_apellido', headerName: 'Primer apellido', width: 140 },
-  { field: 'segundo_apellido', headerName: 'Segundo apellido', width: 140 },
   { field: 'primer_nombre', headerName: 'Primer nombre', width: 140 },
   { field: 'segundo_nombre', headerName: 'Segundo nombre', width: 140 },
+  { field: 'primer_apellido', headerName: 'Primer apellido', width: 140 },
+  { field: 'segundo_apellido', headerName: 'Segundo apellido', width: 140 },
   { field: 'via_ingreso', headerName: 'Vía de ingreso', width: 150 },
   { field: 'situacion_escolar', headerName: 'Situación escolar', width: 150 },
-  { field: 'observaciones', headerName: 'Observaciones', width: 150 },
   { field: 'sexo', headerName: 'Sexo', width: 50 },
+  { field: 'observaciones', headerName: 'Observaciones', width: 150 },
 ];
 
 const paginationModel = { page: 0, pageSize: 10 };
@@ -53,6 +54,8 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
   } = params;*/
 
   const [estudianteAModificar, setEstudianteAModificar] = React.useState<Estudiante | null>(null);
+  const [estudianteACulturales, setEstudianteACulturales] = React.useState<Estudiante | null>(null);
+  const [estudianteADeportivas, setEstudianteADeportivas] = React.useState<Estudiante | null>(null);
 
   //useState
   const [seleccionado, setSeleccionado] = useState<string>('');
@@ -148,27 +151,36 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
           {/*Agregar*/}
           <Button variant='contained' onClick={() => {
             setCreandoEstudiante(true);
-            // if (onCrearEstudiante) onCrearEstudiante();
           }}>Agregar estudiante</Button>
 
           {/*Modificar*/}
           <Button variant="outlined" onClick={() => {
             const estudiante = listadoEstudiantes.find(est => est.id === Number(seleccionado));
             if (estudiante) {
-
-              //setCreandoEstudiante(true);
               setEstudianteAModificar(estudiante);
-
-              //if (onModificarEstudiante) onModificarEstudiante(estudiante);
-
             }
-
           }}>Modificar</Button>
 
           {/*Eliminar*/}
           <Button variant="outlined" color='error' onClick={() => {
             onEliminar();
           }}>Eliminar</Button>
+
+          {/*Participaciones culturales*/}
+          <Button variant="outlined" color='info' onClick={() => {
+            const estudiante = listadoEstudiantes.find(est => est.id === Number(seleccionado));
+            if (estudiante) {
+              setEstudianteACulturales(estudiante);
+            }
+          }}>Participaciones culturales</Button>
+
+          {/*Participaciones deportivas*/}
+          <Button variant="outlined" color='info' onClick={() => {
+            const estudiante = listadoEstudiantes.find(est => est.id === Number(seleccionado));
+            if (estudiante) {
+              setEstudianteADeportivas(estudiante);
+            }
+          }}>Participaciones deportivas</Button>
 
         </Stack>
 
@@ -189,8 +201,18 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
         {/* Crear estudiante - Dialogo */}
         {creandoEstudiante || estudianteAModificar ? <EstudiantesCrearDialogo estudianteModificar={estudianteAModificar || null} onCancelar={() => {
           setCreandoEstudiante(false);
-          setEstudianteAModificar(null); 
-         }} /> : null}
+          setEstudianteAModificar(null);
+        }} /> : null}
+
+        {
+          estudianteACulturales ? <EstudianteParticipacionesCulturales onCancelar={
+            ()=>{setEstudianteACulturales(null);}            
+          } estudiante={estudianteACulturales}/> : null
+        }
+
+        {
+          estudianteADeportivas ? <div>Deportivas</div> : null
+        }
 
       </ThemeProvider>
     </Paper>
