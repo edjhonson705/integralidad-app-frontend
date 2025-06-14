@@ -18,11 +18,11 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import EstudiantesTabla from './componentes/estudiantes_tabla/estudiantes_tabla';
-import type { Estudiante } from './modelos/estudiantes';
+//import type { Estudiante } from './modelos/estudiantes';
 import ParrafosPaginaPrincipal from './componentes/parrafos_pagina_principal';
 import CulturaTabla from './componentes/cultura_tabla/cultura_tabla';
 import DeportesTabla from './componentes/deportes_tabla/deportes_tabla';
-import CulturaCrearFormulario from './componentes/cultura_crear';
+//import CulturaCrearFormulario from './componentes/cultura_crear';
 
 const drawerWidth = 240;
 
@@ -92,34 +92,42 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 
+interface IPCAppIntegralidad {
+    onSalir: (params: any) => void;
+}
+
+
 /**
  * AppIntegralidad
  *  - Componentes de la interfaz principal de la aplicacion.
  * @returns 
  */
-export default function AppIntegralidad() {
+export default function AppIntegralidad(params: IPCAppIntegralidad) {
+
+    const { onSalir } = params;
 
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);  
-    const [gestionandoDeportes, setGestionandoDeportes] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
 
     const [queHacer, setQueHacer] = React.useState<{
         paginaPrincipal: boolean;
         gestionandoEstudiantes: boolean;
-        gestionarCultura: boolean;      
+        gestionarCultura: boolean;
+        gestionarDeportes: boolean;
     }>({
         paginaPrincipal: true,
         gestionandoEstudiantes: false,
-        gestionarCultura: false       
+        gestionarCultura: false,
+        gestionarDeportes: false
     });
-  
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
 
     const handleDrawerClose = () => {
         setOpen(false);
-    }; 
+    };
 
     /**
      * JSX
@@ -178,7 +186,8 @@ export default function AppIntegralidad() {
                             setQueHacer({
                                 paginaPrincipal: false,
                                 gestionandoEstudiantes: true,
-                                gestionarCultura: false                              
+                                gestionarCultura: false,
+                                gestionarDeportes: false
                             });
                         }}>
                             <ListItemIcon>
@@ -193,7 +202,8 @@ export default function AppIntegralidad() {
                             setQueHacer({
                                 paginaPrincipal: false,
                                 gestionandoEstudiantes: false,
-                                gestionarCultura: true                              
+                                gestionarCultura: true,
+                                gestionarDeportes: false
                             });
 
                         }}>
@@ -209,9 +219,10 @@ export default function AppIntegralidad() {
                             setQueHacer({
                                 paginaPrincipal: false,
                                 gestionandoEstudiantes: false,
-                                gestionarCultura: false                              
+                                gestionarCultura: false,
+                                gestionarDeportes: true
                             });
-                            setGestionandoDeportes(true);
+                            //setGestionandoDeportes(true);
                         }}>
                             <ListItemIcon>
                                 <InboxIcon />
@@ -224,7 +235,7 @@ export default function AppIntegralidad() {
                 <Divider />
                 <List>
                     <ListItem key={'Salir'} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={onSalir}>
                             <ListItemIcon>
                                 <InboxIcon />
                             </ListItemIcon>
@@ -246,10 +257,10 @@ export default function AppIntegralidad() {
                 {queHacer.gestionandoEstudiantes ? <EstudiantesTabla /> : null}
 
                 {/* Gestionando Cultura */}
-                {queHacer.gestionarCultura ? <CulturaTabla /> : null}             
+                {queHacer.gestionarCultura ? <CulturaTabla /> : null}
 
                 {/* Gestionando Deportes */}
-                {gestionandoDeportes ? <DeportesTabla /> : null}
+                {queHacer.gestionarDeportes ? <DeportesTabla /> : null}
 
             </Main>
         </Box>

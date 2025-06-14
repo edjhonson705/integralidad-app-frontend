@@ -14,8 +14,8 @@ export type Estudiante = {
     segundo_nombre: string;
     via_ingreso: string;
     situacion_escolar: string;
-    observaciones: string;   
-    sexo: string;    
+    observaciones: string;
+    sexo: string;
 };
 
 /**
@@ -26,8 +26,8 @@ export type ParticipacionCultura = {
     nombre_numero_cultural: string;
     categoria_cultural: string;
     resultado: string;
-    fecha: Date;  
-    curso: string; 
+    fecha: Date;
+    curso: string;
 };
 
 /**
@@ -37,7 +37,9 @@ export type ParticipacionDeportes = {
     id?: number;
     nombre_numero_deportivo: string;
     categoria_deportiva: string;
-    resultado: string;   
+    resultado: string;
+    fecha: Date;
+    curso: string;
 };
 
 /**
@@ -46,5 +48,5 @@ export type ParticipacionDeportes = {
 export interface MostrarAlerta {
     tipo: AlertColor;
     mostrar: boolean;
-    mensaje?:string;
-  }
+    mensaje?: string;
+}

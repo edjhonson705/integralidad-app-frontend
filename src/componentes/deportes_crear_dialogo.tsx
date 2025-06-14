@@ -5,9 +5,9 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import type { MostrarAlerta, ParticipacionCultura } from '../modelos/estudiantes';
+import type { MostrarAlerta, ParticipacionDeportes } from '../modelos/estudiantes';
 import { Alert, Box, Snackbar } from '@mui/material';
-import { ControladorCultura as Controlador } from '../controladores/cultura/ControladorCultura';
+import { ControladorDeportes as Controlador } from '../controladores/deportes/ControladorDeportes';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -19,14 +19,14 @@ import dayjs from 'dayjs';
 interface IPCmpCulturaCrearDialogo {
     onCancelar?: () => void;
     onGuardarOK?: () => void;
-    itemModificar?: ParticipacionCultura | null;
+    itemModificar?: ParticipacionDeportes | null;
 }
 
 /**
  *  Un formulario de diálogo que permite al usuario ingresar su dirección de correo electrónico.
  * @returns 
  */
-export default function CulturaCrearDialogo(params: IPCmpCulturaCrearDialogo) {
+export default function DeportesCrearDialogo(params: IPCmpCulturaCrearDialogo) {
 
     const {
         onCancelar,
@@ -34,16 +34,16 @@ export default function CulturaCrearDialogo(params: IPCmpCulturaCrearDialogo) {
         onGuardarOK
     } = params;
 
-    const [formData, setFormData] = React.useState<ParticipacionCultura>(itemModificar ? {
-        nombre_numero_cultural: itemModificar.nombre_numero_cultural,
-        categoria_cultural: itemModificar.categoria_cultural,
+    const [formData, setFormData] = React.useState<ParticipacionDeportes>(itemModificar ? {
+        nombre_numero_deportivo: itemModificar.nombre_numero_deportivo,
+        categoria_deportiva: itemModificar.categoria_deportiva,
         resultado: itemModificar.resultado,
         fecha: itemModificar.fecha,
         curso: itemModificar.curso,
         id: itemModificar.id
     } : {
-        nombre_numero_cultural: '',
-        categoria_cultural: '',
+        nombre_numero_deportivo: '',
+        categoria_deportiva: '',
         resultado: '',
         fecha: new Date(),
         curso: '',
@@ -183,17 +183,18 @@ export default function CulturaCrearDialogo(params: IPCmpCulturaCrearDialogo) {
                         noValidate
                         autoComplete="off"
                     >
-                        <TextField name='nombre_numero_cultural'
-                            value={formData.nombre_numero_cultural}
+                        <TextField name='nombre_numero_deportivo'
+                            value={formData.nombre_numero_deportivo}
                             onChange={handleChange}
                             required id="outlined-basic"
-                            label="Número cultural"
+                            label="Deporte"
                             variant="outlined" />
-                            
-                        <TextField name='categoria_cultural'
-                            value={formData.categoria_cultural}
-                            onChange={handleChange} id="outlined-basic"
-                            label="Categoría cultural"
+
+                        <TextField name='categoria_deportiva'
+                            value={formData.categoria_deportiva}
+                            onChange={handleChange}
+                            id="outlined-basic"
+                            label="Categoría deportiva"
                             variant="outlined" />
 
                         <TextField name='resultado'

@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import type { ParticipacionCultura, MostrarAlerta } from "../../modelos/estudiantes";
 import { Alert, Button, Snackbar, Stack } from '@mui/material';
 import { ControladorCultura as Controlador } from '../../controladores/cultura/ControladorCultura';
-
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
 import CulturaCrearDialogo from '../cultura_crear_dialogo';
@@ -23,7 +22,7 @@ const columns: GridColDef[] = [
   { field: 'nombre_numero_cultural', headerName: 'Número cultural', width: 300 },
   { field: 'categoria_cultural', headerName: 'Categoria cultural', width: 150 },
   { field: 'resultado', headerName: 'Resultado', width: 140 },
-  { field: 'fecha', type: 'date', headerName: 'Fecha', width: 140 },
+  { field: 'fecha', headerName: 'Fecha', width: 140 },
   { field: 'curso', headerName: 'Curso', width: 140 },
 ];
 
@@ -58,10 +57,9 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
   });
 
   const [creandoParticipacionCultural, setCreandoParticipacionCultural] = useState<boolean>(false);
-
   const [participacionCulturalAModificar, setParticipacionCulturalAModificar] = useState<ParticipacionCultura | null>(null);
-
   const [listado, setListado] = useState<ParticipacionCultura[]>([]);
+  const [refrescarListado, setRefrescarListado] = useState(false);
 
   /**
    * Solicitar estudiantes a la API
@@ -79,7 +77,7 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
   // obtener listado de estudiantes en la primera carga del componente
   useEffect(() => {
     obtenerListado();
-  }, []);
+  }, [refrescarListado]);
 
   /**
    * 
@@ -122,10 +120,44 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
   }
 
   /**
+   * 
+   */
+  const onAgregar = () => {
+    setCreandoParticipacionCultural(true);
+    if (onCrear) onCrear();
+  }
+
+  /**
+   * 
+   */
+  const onModificarClick = () => {
+    const elSeleccionado = listado.find(est => est.id === Number(seleccionado));
+    if (elSeleccionado) {
+      setParticipacionCulturalAModificar(elSeleccionado);
+      if (onModificar) onModificar(elSeleccionado);
+    }
+  }
+
+  /**
+   * 
+   */
+  const onEliminarClick = () => {
+    onEliminar();
+  }
+
+  /**
+   * 
+   */
+  const onCancelarCulturaCrearDialogo = () => {
+    setCreandoParticipacionCultural(false);
+    setParticipacionCulturalAModificar(null);
+  }
+
+  /**
    * JSX
    */
   return (
-    <Paper sx={{ height: 500, width: '100%' }}>
+    <Paper sx={{ justifyContent: 'flex-end', height: 500, width: '100%' }}>
       <ThemeProvider theme={theme}>
         <Snackbar
           open={mostrarAlerta.mostrar}
@@ -141,30 +173,15 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
         <Stack direction="row" spacing={2}>
 
           {/*Agregar*/}
-          <Button variant='contained' onClick={() => {
-
-            setCreandoParticipacionCultural(true);
-
-            if (onCrear) onCrear();
-
-          }}>Agregar participción cultural</Button>
+          <Button
+            variant='contained'
+            onClick={onAgregar}>Agregar participción cultural</Button>
 
           {/*Modificar*/}
-          <Button variant="outlined" onClick={() => {
-
-            const elSeleccionado = listado.find(est => est.id === Number(seleccionado));
-
-            if (elSeleccionado) {
-              setParticipacionCulturalAModificar(elSeleccionado);
-              if (onModificar) onModificar(elSeleccionado);
-            }
-
-          }}>Modificar</Button>
+          <Button variant="outlined" onClick={onModificarClick}>Modificar</Button>
 
           {/*Eliminar*/}
-          <Button variant="outlined" color='error' onClick={() => {
-            onEliminar();
-          }}>Eliminar</Button>
+          <Button variant="outlined" color='error' onClick={onEliminarClick}>Eliminar</Button>
         </Stack>
 
         <DataGrid
@@ -183,11 +200,18 @@ export default function CulturaTabla(params: CuturaTablaParametros) {
         />
 
         {/* Crear estudiante - Dialogo */}
-        {creandoParticipacionCultural || participacionCulturalAModificar ? <CulturaCrearDialogo itemModificar={participacionCulturalAModificar || null} onCancelar={() => {
-
-          setCreandoParticipacionCultural(false);
-          setParticipacionCulturalAModificar(null);
-        }} /> : null}
+        {
+          creandoParticipacionCultural || participacionCulturalAModificar
+            ? <CulturaCrearDialogo
+              itemModificar={participacionCulturalAModificar || null}
+              onCancelar={onCancelarCulturaCrearDialogo}
+              onGuardarOK={() => {
+                setRefrescarListado(!refrescarListado);
+                setCreandoParticipacionCultural(false);
+                setParticipacionCulturalAModificar(null);
+              }} /> : null
+        }
+        
       </ThemeProvider>
     </Paper>
   );

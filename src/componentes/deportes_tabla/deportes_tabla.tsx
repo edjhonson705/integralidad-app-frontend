@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import type { ParticipacionCultura, MostrarAlerta, ParticipacionDeportes } from "../../modelos/estudiantes";
@@ -7,6 +7,7 @@ import { ControladorDeportes as Controlador } from '../../controladores/deportes
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
+import DeportesCrearDialogo from '../deportes_crear_dialogo';
 
 const theme = createTheme(
   {
@@ -22,13 +23,15 @@ const columns: GridColDef[] = [
   { field: 'nombre_numero_deportivo', headerName: 'Deporte', width: 300 },
   { field: 'categoria_deportiva', headerName: 'Categoria deportiva', width: 150 },
   { field: 'resultado', headerName: 'Resultado', width: 140 },
+  { field: 'fecha', headerName: 'Fecha', width: 140 },
+  { field: 'curso', headerName: 'Curso', width: 140 },
 ];
 const paginationModel = { page: 0, pageSize: 10 };
 
 interface DeportesTablaParametros {
   listado?: ParticipacionCultura[];
   onCrear?: () => void;
-  onModificar?: (participacion:ParticipacionDeportes) => void;
+  onModificar?: (participacion: ParticipacionDeportes) => void;
   onEliminar?: (resultado: boolean) => void;
 }
 
@@ -53,16 +56,21 @@ export default function DeportesTabla(params: DeportesTablaParametros) {
     mensaje: ''
   });
 
-  const [listadoEstudiantes, setListadoEstudiantes] = useState<ParticipacionDeportes[]>([]);
+  const [creandoParticipacionDeportiva, setCreandoParticipacionDeportiva] = useState<boolean>(false);
+  const [participacionDeportivaAModificar, setParticipacionDeportivaAModificar] = useState<ParticipacionDeportes | null>(null);
+  const [listado, setListado] = useState<ParticipacionDeportes[]>([]);
+  const [refrescarListado, setRefrescarListado] = useState(false);
+
+  //const [listadoEstudiantes, setListadoEstudiantes] = useState<ParticipacionDeportes[]>([]);
 
   /**
    * Solicitar estudiantes a la API
    */
-  const obtenerListadoEstudiantes = () => {
+  const obtenerListado = () => {
 
     Controlador.obtenerListado()
       .then((datos) => {
-        setListadoEstudiantes(datos);
+        setListado(datos);
       }).catch((error) => {
         console.error('Error obteniendo estudiantes', error);
       });
@@ -70,8 +78,8 @@ export default function DeportesTabla(params: DeportesTablaParametros) {
 
   // obtener listado de estudiantes en la primera carga del componente
   useEffect(() => {
-    obtenerListadoEstudiantes();
-  }, []);
+    obtenerListado();
+  }, [refrescarListado]);
 
   /**
    * 
@@ -90,7 +98,7 @@ export default function DeportesTabla(params: DeportesTablaParametros) {
           });
 
           // Recargar la lista de estudiantes
-          obtenerListadoEstudiantes();
+          obtenerListado();
 
         }
         else {
@@ -114,6 +122,33 @@ export default function DeportesTabla(params: DeportesTablaParametros) {
   }
 
   /**
+  * 
+  */
+  const onCancelarDeportesCrearDialogo = () => {
+    setCreandoParticipacionDeportiva(false);
+    setParticipacionDeportivaAModificar(null);
+  }
+
+  /**
+  * 
+  */
+  const onAgregar = () => {
+    setCreandoParticipacionDeportiva(true);
+    if (onCrear) onCrear();
+  }
+
+  /**
+ * 
+ */
+  const onModificarClick = () => {
+    const elSeleccionado = listado.find(est => est.id === Number(seleccionado));
+    if (elSeleccionado) {
+      setParticipacionDeportivaAModificar(elSeleccionado);
+      if (onModificar) onModificar(elSeleccionado);
+    }
+  }
+
+  /**
    * JSX
    */
   return (
@@ -133,22 +168,10 @@ export default function DeportesTabla(params: DeportesTablaParametros) {
         <Stack direction="row" spacing={2}>
 
           {/*Agregar*/}
-          <Button variant='contained' onClick={() => {
-
-            if (onCrear) onCrear();
-
-          }}>Agregar</Button>
+          <Button variant='contained' onClick={onAgregar}>Agregar participación deportiva</Button>
 
           {/*Modificar*/}
-          <Button variant="outlined" onClick={() => {
-
-            const elSeleccionado = listadoEstudiantes.find(est => est.id === Number(seleccionado));
-
-            if(elSeleccionado){
-              if (onModificar) onModificar(elSeleccionado);
-            }      
-
-          }}>Modificar</Button>
+          <Button variant="outlined" onClick={onModificarClick}>Modificar</Button>
 
           {/*Eliminar*/}
           <Button variant="outlined" color='error' onClick={() => {
@@ -157,22 +180,32 @@ export default function DeportesTabla(params: DeportesTablaParametros) {
         </Stack>
 
         <DataGrid
-          rows={listadoEstudiantes}
+          rows={listado}
           columns={columns}
           initialState={{ pagination: { paginationModel } }}
           pageSizeOptions={[10, 20, 50]}
           checkboxSelection
           disableMultipleRowSelection
           onRowSelectionModelChange={(ids) => {
-
-            console.log(ids);
-
             const arrayId = Array.from(ids.ids);
-            // console.log(arrayId[0] as string);
             setSeleccionado(arrayId[0] as string);
           }}
           sx={{ border: 0 }}
         />
+
+        {/* Crear participacion deportiva - Dialogo */}
+        {
+          creandoParticipacionDeportiva || participacionDeportivaAModificar
+            ? <DeportesCrearDialogo
+              itemModificar={participacionDeportivaAModificar || null}
+              onCancelar={onCancelarDeportesCrearDialogo}
+              onGuardarOK={() => {
+                setRefrescarListado(!refrescarListado);
+                setCreandoParticipacionDeportiva(false);
+                setParticipacionDeportivaAModificar(null);
+              }} /> : null
+        }
+
       </ThemeProvider>
     </Paper>
   );
