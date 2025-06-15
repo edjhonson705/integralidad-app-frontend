@@ -1,4 +1,4 @@
-import type { Estudiante, ParticipacionCultura } from "../../modelos/estudiantes";
+import type { ParticipacionCultura } from "../../modelos/estudiantes";
 
 /**
  * Controlador paa Gestionar datos de la entidad Estudiante
@@ -9,7 +9,7 @@ export class ControladorEstudianteCulturaDeporte {
      * 
      * @returns 
      */
-    static async obtenerParticipacionesCulturalesDelEstudiante(idEstudiante:number): Promise<ParticipacionCultura[]> {
+    static async obtenerParticipacionesCulturalesDelEstudiante(idEstudiante: number): Promise<ParticipacionCultura[]> {
 
         try {
             const response = await fetch(`http://localhost:3000/estudiante/${idEstudiante}/participaciones-culturales`);
@@ -20,7 +20,7 @@ export class ControladorEstudianteCulturaDeporte {
             return data;
 
         } catch (error) {
-            console.error('Error al obtener los estudiantes:', error);             
+            console.error('Error al obtener los estudiantes:', error);
         }
         return [];
     }
@@ -28,15 +28,17 @@ export class ControladorEstudianteCulturaDeporte {
     /**
      * Enviar los datos del estudiante a crear a la API
      */
-    static async crearEstudiante(estudiante: Estudiante): Promise<boolean> {
+    static async asignarParticipacionCulturalEstudiante(idEstudiante: number, idParticipacionCultural: string): Promise<boolean> {
 
         try {
-            const response = await fetch('http://localhost:3000/estudiante', {
+            const response = await fetch(`http://localhost:3000/estudiante/${idEstudiante}/participaciones-culturales`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(estudiante),
+                body: JSON.stringify({
+                    "participacionIds": [idParticipacionCultural]
+                }),
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -53,7 +55,7 @@ export class ControladorEstudianteCulturaDeporte {
     /**
      * Eliminar
      */
-    static async eliminarParticipacionCulturalDelEstudiante(idEstudiante: number, idParticipacion:string): Promise<boolean> {
+    static async eliminarParticipacionCulturalDelEstudiante(idEstudiante: number, idParticipacion: string): Promise<boolean> {
 
         try {
             const response = await fetch(`http://localhost:3000/estudiante/${idEstudiante}/participaciones-culturales`, {
@@ -62,7 +64,7 @@ export class ControladorEstudianteCulturaDeporte {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    "participacionId":idParticipacion
+                    "participacionId": idParticipacion
                 }),
             });
             if (!response.ok) {

@@ -4,7 +4,6 @@ import Paper from '@mui/material/Paper';
 import type { Estudiante, MostrarAlerta } from "../../modelos/estudiantes";
 import { Alert, Button, Snackbar, Stack } from '@mui/material';
 import { ControladorEstudiante } from '../../controladores/estudiantes/ControladorEstudiante';
-
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
 import EstudiantesCrearDialogo from '../estudiantes_crear_dialogo';
@@ -69,6 +68,7 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
   });
 
   const [listadoEstudiantes, setListadoEstudiantes] = useState<Estudiante[]>([]);
+  const [refrescarListado, setRefrescarListado] = useState(false);
 
   /**
    * Solicitar estudiantes a la API
@@ -86,7 +86,7 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
   // obtener listado de estudiantes en la primera carga del componente
   useEffect(() => {
     obtenerListadoEstudiantes();
-  }, []);
+  }, [refrescarListado]);
 
   /**
    * 
@@ -205,9 +205,10 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
         }} /> : null}
 
         {
-          estudianteACulturales ? <EstudianteParticipacionesCulturales onCancelar={
-            ()=>{setEstudianteACulturales(null);}            
-          } estudiante={estudianteACulturales}/> : null
+          estudianteACulturales ? <EstudianteParticipacionesCulturales
+            onCancelar={
+              () => { setEstudianteACulturales(null); }
+            } estudiante={estudianteACulturales} /> : null
         }
 
         {

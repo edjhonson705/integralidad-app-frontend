@@ -1,18 +1,14 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-//import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { ControladorEstudianteCulturaDeporte } from '../controladores/estudiantes/ControladorEstudianteCulturaDeporte';
-import type { Estudiante, MostrarAlerta, ParticipacionCultura } from '../modelos/estudiantes';
-import { Alert, Box, Paper, Snackbar, Stack, Typography } from '@mui/material';
+import type { Estudiante, ParticipacionCultura } from '../modelos/estudiantes';
+import { FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
-
-import { ControladorCultura as Controlador } from '../controladores/cultura/ControladorCultura';
-
+import { ControladorCultura } from '../controladores/cultura/ControladorCultura';
 
 const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 50 },
@@ -29,9 +25,20 @@ const paginationModel = { page: 0, pageSize: 10 };
  *  Interfaz de Parametros para el formulario de creación de estudiantes.
  */
 interface IPCmpEstudianteParticipacionesCulturales {
-    onCancelar?: () => void;
+    onCancelar?: () => void;   
     estudiante?: Estudiante | null;
 }
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
 
 /**
  *  Un formulario de diálogo que permite al usuario ingresar su dirección de correo electrónico.
@@ -44,6 +51,8 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
     const [listado, setListado] = React.useState<ParticipacionCultura[]>([]);
     const [seleccionado, setSeleccionado] = React.useState<string>('');
     const [refrescarListado, setRefrescarListado] = React.useState(false);
+    const [agregandoParticipacion, setAgregandoParticipacion] = React.useState(false);
+    const [participaciones, setParticipaciones] = React.useState<ParticipacionCultura[]>([]);
 
     /**
      * Solicitar estudiantes a la API
@@ -79,6 +88,19 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
             })
         }
     }
+  
+    const [personName, setPersonName] = React.useState<string>('');
+
+    const onAgregarParticipacion = () => {
+
+        ControladorCultura.obtenerListado().then((listadoParticipacionesCulturales) => {
+
+            console.log(listadoParticipacionesCulturales);
+            setParticipaciones(listadoParticipacionesCulturales);
+        });
+
+        setAgregandoParticipacion(true);
+    }
 
     /**
      * JSX
@@ -95,11 +117,6 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
                         component: 'form',
                         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
                             event.preventDefault();
-                            //const formData = new FormData(event.currentTarget);
-                            //const formJson = Object.fromEntries((formData as any).entries());
-                            //const email = formJson.email;
-                            //console.log(email);
-                            //handleClose();
                         },
                     },
                 }}
@@ -122,9 +139,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
                         <Stack direction="row" spacing={2}>
 
                             {/*Agregar*/}
-                            <Button variant='contained' onClick={() => {
-                                //setCreandoEstudiante(true);
-                            }}>Agregar participación</Button>
+                            <Button variant='contained' onClick={onAgregarParticipacion}>Agregar participación</Button>
 
                             {/*Eliminar*/}
                             <Button variant="outlined" color='error' onClick={onEliminarClick}>Eliminar</Button>
@@ -151,11 +166,73 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
                 </DialogContent>
 
                 <DialogActions>
-                    <Button variant="outlined" onClick={() => { if (onCancelar) onCancelar(); setOpen(false); }}>Cerrar</Button>                   
-                   
+                    <Button variant="outlined" onClick={() => { if (onCancelar) onCancelar(); setOpen(false); }}>Cerrar</Button>
+
                 </DialogActions>
 
             </Dialog>
+
+            {/*Agregar participacion*/}
+            <Dialog fullWidth={true} maxWidth='sm' open={agregandoParticipacion} >
+                <DialogTitle>Agregar participación</DialogTitle>
+
+                <DialogContent>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-multiple-name-label">Participaciones culturales</InputLabel>
+                        <Select
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            value={personName}
+                            onChange={(event) => {
+                                setPersonName(event.target.value);
+                            }}
+                            MenuProps={MenuProps}
+                        >
+                            {participaciones.map((participacion) => (
+                                <MenuItem
+                                    key={participacion.id}
+                                    value={participacion.id}
+                                /* style={getStyles(participacion.nombre_numero_cultural, personName, theme)}*/
+                                >
+                                    {participacion.id + ' - '+ participacion.nombre_numero_cultural + ' - ' + participacion.curso + ' - ' + participacion.resultado}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                </DialogContent>
+
+                <DialogActions>
+
+                    <Button variant="outlined" color='info'
+                        onClick={() => {
+                            setAgregandoParticipacion(false);
+                        }}>Cancelar</Button>
+
+                    <Button variant='contained' onClick={() => {
+
+                        if (estudiante?.id) {
+
+                            console.log(personName);
+
+                            ControladorEstudianteCulturaDeporte.asignarParticipacionCulturalEstudiante(estudiante?.id, personName).then((resultado) => {
+
+                                if(resultado){
+                                    //TODO: mostrar mensaje notificacion
+                                    setRefrescarListado(!refrescarListado);
+                                }
+                                else{
+                                    //TODO
+                                }
+                            });
+                            setAgregandoParticipacion(false);
+                        }
+
+                    }}>Guardar</Button>
+
+                </DialogActions>
+            </Dialog>
+
         </React.Fragment>
     );
 }
