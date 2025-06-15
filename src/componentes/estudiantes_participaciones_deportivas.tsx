@@ -5,18 +5,18 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { ControladorEstudianteCulturaDeporte } from '../controladores/estudiantes/ControladorEstudianteCulturaDeporte';
-import type { Estudiante, ParticipacionCultura } from '../modelos/estudiantes';
+import type { Estudiante, ParticipacionCultura, ParticipacionDeportes } from '../modelos/estudiantes';
 import { FormControl, InputLabel, MenuItem, Paper, Select, Stack, Typography } from '@mui/material';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
-import { ControladorCultura } from '../controladores/cultura/ControladorCultura';
+import { ControladorDeportes } from '../controladores/deportes/ControladorDeportes';
 
 const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 50 },
-    { field: 'nombre_numero_cultural', headerName: 'Número cultural', width: 220 },
-    { field: 'categoria_cultural', headerName: 'Categoria cultural', width: 150 },
-    { field: 'resultado', headerName: 'Resultado', width: 100 },
-    { field: 'fecha', headerName: 'Fecha', width: 120, },
-    { field: 'curso', headerName: 'Curso', width: 140 },
+  { field: 'id', headerName: 'ID', width: 50 },
+  { field: 'nombre_numero_deportivo', headerName: 'Deporte', width: 220 },
+  { field: 'categoria_deportiva', headerName: 'Categoria deportiva', width: 150 },
+  { field: 'resultado', headerName: 'Resultado', width: 100 },
+  { field: 'fecha', headerName: 'Fecha', width: 120 },
+  { field: 'curso', headerName: 'Curso', width: 140 },
 ];
 
 const paginationModel = { page: 0, pageSize: 10 };
@@ -24,7 +24,7 @@ const paginationModel = { page: 0, pageSize: 10 };
 /**
  *  Interfaz de Parametros para el formulario de creación de estudiantes.
  */
-interface IPCmpEstudianteParticipacionesCulturales {
+interface IPCmpEstudianteParticipacionesDeportivas {
     onCancelar?: () => void;   
     estudiante?: Estudiante | null;
 }
@@ -41,10 +41,10 @@ const MenuProps = {
 };
 
 /**
- * Gestion de participaciones culturales del estudiante 
+ * Gestion de participaciones deportivas del estudiante 
  * @returns 
  */
-export default function EstudianteParticipacionesCulturales(params: IPCmpEstudianteParticipacionesCulturales) {
+export default function EstudianteParticipacionesDeportivas(params: IPCmpEstudianteParticipacionesDeportivas) {
 
     const { onCancelar, estudiante } = params;
     const [open, setOpen] = React.useState(true);
@@ -52,7 +52,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
     const [seleccionado, setSeleccionado] = React.useState<string>('');
     const [refrescarListado, setRefrescarListado] = React.useState(false);
     const [agregandoParticipacion, setAgregandoParticipacion] = React.useState(false);
-    const [participaciones, setParticipaciones] = React.useState<ParticipacionCultura[]>([]);
+    const [participaciones, setParticipaciones] = React.useState<ParticipacionDeportes[]>([]);
 
     /**
      * Solicitar estudiantes a la API
@@ -60,7 +60,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
     const obtenerListado = () => {
 
         if (estudiante?.id) {
-            ControladorEstudianteCulturaDeporte.obtenerParticipacionesCulturalesDelEstudiante(estudiante.id)
+            ControladorEstudianteCulturaDeporte.obtenerParticipacionesDeportivasDelEstudiante(estudiante.id)
                 .then((datos) => {
                     setListado(datos);
                 }).catch((error) => {
@@ -80,7 +80,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
     const onEliminarClick = () => {
 
         if (estudiante?.id) {
-            ControladorEstudianteCulturaDeporte.eliminarParticipacionCulturalDelEstudiante(estudiante?.id, seleccionado).then((resultado) => {
+            ControladorEstudianteCulturaDeporte.eliminarParticipacionDeportivaDelEstudiante(estudiante?.id, seleccionado).then((resultado) => {
 
                 if (resultado) {
                     setRefrescarListado(!refrescarListado);
@@ -93,10 +93,10 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
 
     const onAgregarParticipacion = () => {
 
-        ControladorCultura.obtenerListado().then((listadoParticipacionesCulturales) => {
+        ControladorDeportes.obtenerListado().then((listadoParticipacionesDeportivas) => {
 
-            console.log(listadoParticipacionesCulturales);
-            setParticipaciones(listadoParticipacionesCulturales);
+            console.log(listadoParticipacionesDeportivas);
+            setParticipaciones(listadoParticipacionesDeportivas);
         });
 
         setAgregandoParticipacion(true);
@@ -121,7 +121,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
                     },
                 }}
             >
-                <DialogTitle>Participaciones culturales del estudiante</DialogTitle>
+                <DialogTitle>Participaciones deportivas del estudiante</DialogTitle>
 
                 <DialogContent>
                     <Paper sx={{ justifyContent: 'flex-end', height: 300, width: '100%' }}>
@@ -178,7 +178,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
 
                 <DialogContent>
                     <FormControl fullWidth>
-                        <InputLabel id="demo-multiple-name-label">Participaciones culturales</InputLabel>
+                        <InputLabel id="demo-multiple-name-label">Participaciones deportivas</InputLabel>
                         <Select
                             labelId="demo-multiple-name-label"
                             id="demo-multiple-name"
@@ -194,7 +194,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
                                     value={participacion.id}
                                 /* style={getStyles(participacion.nombre_numero_cultural, personName, theme)}*/
                                 >
-                                    {participacion.id + ' - '+ participacion.nombre_numero_cultural + ' - ' + participacion.curso + ' - ' + participacion.resultado}
+                                    {participacion.id + ' - '+ participacion.nombre_numero_deportivo + ' - ' + participacion.curso + ' - ' + participacion.resultado}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -211,11 +211,9 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
 
                     <Button variant='contained' onClick={() => {
 
-                        if (estudiante?.id) {
+                        if (estudiante?.id) {                           
 
-                            console.log(personName);
-
-                            ControladorEstudianteCulturaDeporte.asignarParticipacionCulturalEstudiante(estudiante?.id, personName).then((resultado) => {
+                            ControladorEstudianteCulturaDeporte.asignarParticipacionDeportivaEstudiante(estudiante?.id, personName).then((resultado) => {
 
                                 if(resultado){
                                     //TODO: mostrar mensaje notificacion

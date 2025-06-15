@@ -8,6 +8,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { esES } from '@mui/material/locale';
 import EstudiantesCrearDialogo from '../estudiantes_crear_dialogo';
 import EstudianteParticipacionesCulturales from '../estudiantes_participaciones_culturales';
+import EstudianteParticipacionesDeportivas from '../estudiantes_participaciones_deportivas';
 
 const theme = createTheme(
   {
@@ -205,14 +206,26 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
         }} /> : null}
 
         {
-          estudianteACulturales ? <EstudianteParticipacionesCulturales
-            onCancelar={
-              () => { setEstudianteACulturales(null); }
-            } estudiante={estudianteACulturales} /> : null
+          estudianteACulturales ?
+            <EstudianteParticipacionesCulturales
+              onCancelar={
+                () => { setEstudianteACulturales(null); }
+              }
+              estudiante={estudianteACulturales}
+            />
+            : null
         }
 
         {
-          estudianteADeportivas ? <div>Deportivas</div> : null
+          estudianteADeportivas ?
+            <EstudianteParticipacionesDeportivas
+              onCancelar={
+                () => { setEstudianteADeportivas(null); }
+              }
+              estudiante={estudianteADeportivas}
+            />
+
+            : null
         }
 
       </ThemeProvider>
