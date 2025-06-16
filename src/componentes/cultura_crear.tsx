@@ -75,7 +75,7 @@ export default function CulturaCrearFormulario(params: CulturaCrearFormularioPar
 
       }).catch((error) => {
 
-        console.log('Ha ocurrido un error al modificar los datos de la participación', error);
+        console.error('Ha ocurrido un error al modificar los datos de la participación', error);
 
         setMostrarAlerta({
           tipo: 'error',
@@ -104,7 +104,7 @@ export default function CulturaCrearFormulario(params: CulturaCrearFormularioPar
 
       }).catch((error) => {
 
-        console.log('Ha ocurrido un error al guardar los datos de la participación', error);
+        console.error('Ha ocurrido un error al guardar los datos de la participación', error);
 
         setMostrarAlerta({
           tipo: 'error',

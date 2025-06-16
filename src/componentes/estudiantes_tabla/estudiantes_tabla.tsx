@@ -69,7 +69,7 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
   });
 
   const [listadoEstudiantes, setListadoEstudiantes] = useState<Estudiante[]>([]);
-  const [refrescarListado, setRefrescarListado] = useState(false);
+  //const [refrescarListado, setRefrescarListado] = useState(false);
 
   /**
    * Solicitar estudiantes a la API
@@ -87,7 +87,7 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
   // obtener listado de estudiantes en la primera carga del componente
   useEffect(() => {
     obtenerListadoEstudiantes();
-  }, [refrescarListado]);
+  }, []);
 
   /**
    * 
@@ -118,7 +118,7 @@ export default function EstudiantesTabla(params: EstudiantesTablaParametros) {
         }
 
       }).catch((error) => {
-        console.log('Error al eliminar estudiante', error);
+        console.error('Error al eliminar estudiante', error);
 
         setMostrarAlerta({
           tipo: 'error',

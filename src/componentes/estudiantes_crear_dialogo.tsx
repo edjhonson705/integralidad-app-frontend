@@ -4,7 +4,6 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-//import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { ControladorEstudiante } from '../controladores/estudiantes/ControladorEstudiante';
 import type { Estudiante, MostrarAlerta } from '../modelos/estudiantes';
@@ -164,10 +163,9 @@ export default function EstudiantesCrearDialogo(params: EstudianteCrearFormulari
                         component: 'form',
                         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
                             event.preventDefault();
-                            const formData = new FormData(event.currentTarget);
-                            const formJson = Object.fromEntries((formData as any).entries());
-                            const email = formJson.email;
-                            console.log(email);
+                            //const formData = new FormData(event.currentTarget);
+                            //const formJson = Object.fromEntries((formData as any).entries());
+                            //const email = formJson.email;                          
                             handleClose();
                         },
                     },

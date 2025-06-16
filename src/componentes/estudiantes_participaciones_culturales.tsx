@@ -93,9 +93,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
 
     const onAgregarParticipacion = () => {
 
-        ControladorCultura.obtenerListado().then((listadoParticipacionesCulturales) => {
-
-            console.log(listadoParticipacionesCulturales);
+        ControladorCultura.obtenerListado().then((listadoParticipacionesCulturales) => {           
             setParticipaciones(listadoParticipacionesCulturales);
         });
 
@@ -192,7 +190,6 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
                                 <MenuItem
                                     key={participacion.id}
                                     value={participacion.id}
-                                /* style={getStyles(participacion.nombre_numero_cultural, personName, theme)}*/
                                 >
                                     {participacion.id + ' - '+ participacion.nombre_numero_cultural + ' - ' + participacion.curso + ' - ' + participacion.resultado}
                                 </MenuItem>
@@ -211,9 +208,7 @@ export default function EstudianteParticipacionesCulturales(params: IPCmpEstudia
 
                     <Button variant='contained' onClick={() => {
 
-                        if (estudiante?.id) {
-
-                            console.log(personName);
+                        if (estudiante?.id) {                            
 
                             ControladorEstudianteCulturaDeporte.asignarParticipacionCulturalEstudiante(estudiante?.id, personName).then((resultado) => {
 

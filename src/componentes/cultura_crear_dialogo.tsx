@@ -95,7 +95,7 @@ export default function CulturaCrearDialogo(params: IPCmpCulturaCrearDialogo) {
 
             }).catch((error) => {
 
-                console.log('Ha ocurrido un error al modificar los datos de la participación', error);
+                console.error('Ha ocurrido un error al modificar los datos de la participación', error);
 
                 setMostrarAlerta({
                     tipo: 'error',
@@ -127,7 +127,7 @@ export default function CulturaCrearDialogo(params: IPCmpCulturaCrearDialogo) {
 
             }).catch((error) => {
 
-                console.log('Ha ocurrido un error al guardar los datos de la participación', error);
+                console.error('Ha ocurrido un error al guardar los datos de la participación', error);
 
                 setMostrarAlerta({
                     tipo: 'error',
@@ -165,10 +165,9 @@ export default function CulturaCrearDialogo(params: IPCmpCulturaCrearDialogo) {
                         component: 'form',
                         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
                             event.preventDefault();
-                            const formData = new FormData(event.currentTarget);
-                            const formJson = Object.fromEntries((formData as any).entries());
-                            const email = formJson.email;
-                            console.log(email);
+                           // const formData = new FormData(event.currentTarget);
+                           // const formJson = Object.fromEntries((formData as any).entries());
+                            //const email = formJson.email;                      
                             handleClose();
                         },
                     },
